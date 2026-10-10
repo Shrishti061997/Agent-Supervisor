@@ -1,0 +1,5 @@
+import http from 'node:http';
+import app from '../worker/server.js';
+class LocalBucket {values=new Map();i=0;async get(k){const v=this.values.get(k);return v?{etag:v.etag,json:async()=>JSON.parse(v.body)}:null;}async put(k,body,opts={}){if(opts.onlyIf && this.values.get(k)?.etag!==opts.onlyIf.etagMatches)return null;const etag=String(++this.i);this.values.set(k,{body,etag});return {etag};}}
+const env={BUCKET:new LocalBucket(),TOKENROUTER_API_KEY:process.env.TOKENROUTER_API_KEY,TOKENROUTER_MODEL:process.env.TOKENROUTER_MODEL};
+http.createServer(async(req,res)=>{try{const chunks=[];for await(const c of req)chunks.push(c);const r=await app.fetch(new Request('http://localhost:8080'+req.url,{method:req.method,headers:req.headers,body:['GET','HEAD'].includes(req.method)?undefined:Buffer.concat(chunks)}),env);res.writeHead(r.status,Object.fromEntries(r.headers));res.end(Buffer.from(await r.arrayBuffer()));}catch{res.writeHead(500);res.end('Local request failed.');}}).listen(8080,'127.0.0.1',()=>process.stdout.write('AgentWatch local demo: http://localhost:8080\n'));
