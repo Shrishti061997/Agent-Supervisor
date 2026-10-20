@@ -52,6 +52,3 @@ Open `http://localhost:8080`. The local adapter emulates R2 in memory and loses 
 
 Hosted environment: `BUCKET` R2 binding. Optional runtime secrets: `TOKENROUTER_API_KEY` and `TOKENROUTER_MODEL`. Never commit keys.
 
-## Submission scope
-
-This is a live execution-supervision prototype. It does not implement the official report-PDF input contract of the Build a Trust Agent track or the separate Approval Gate starter's judging contract. Check your selected track before claiming eligibility. The prototype demonstrates the four trust tests and can be shown independently.
